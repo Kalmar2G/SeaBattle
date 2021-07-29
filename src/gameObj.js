@@ -9,6 +9,7 @@ export default class GameObj {
   }
   static countUsers = 0;
   id;
+
   get field() {
     const state = {};
     state.fieldState = this.fieldState;
@@ -33,7 +34,28 @@ export default class GameObj {
   }
 
   addHit(hit) {
-    this.fieldState.hitCells.push(hit);
+    let hasChanged = false;
+    hit.x = Number(hit.x);
+    hit.y =  Number(hit.y);
+    this.fieldState.ships.map((ship) => ship.forEach(cell => {
+      if ((cell.x === hit.x) && (cell.y ===  hit.y)) {
+        cell.hit = true;
+        hasChanged = true;
+      }
+    }));
+    if (!hasChanged) {
+      this.fieldState.hitCells.push(hit);
+    }
+  }
+
+  makeHitFilter() {
+    const filteredShips = this.fieldState.ships.map((ship) => ship.filter((cell) => cell.hit === true));
+    return  {
+      fieldState: {
+        ships: filteredShips,
+        hitCells: this.fieldState.hitCells,
+      }
+    }
   }
 
   get userId() {
