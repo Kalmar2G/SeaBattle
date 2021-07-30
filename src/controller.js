@@ -33,10 +33,18 @@ const changeTurns = () => {
   user2.changeTurn();
 };
 
+const isGameOver = () => (user1.isAllShipsDestroyed() || user2.isAllShipsDestroyed());
+
+const restartGame = () => {
+  GameObj.nullifyUsers();
+  user1.restart(true);
+  user2.restart(false);
+};
+
 class Controller {
   connect(req, res) {
     try {
-      if (GameObj.countUsers >= 2) {
+      if (GameObj.usersCount() >= 2) {
         res.status(200).json({ status: 2 });
         return;
       }
@@ -117,6 +125,9 @@ class Controller {
       const enemyField = inactiveUser.makeHitFilter();
       changeTurns();
       res.status(200).json(enemyField);
+      if (isGameOver()) {
+        setTimeout(restartGame, 10000);
+      }
     } catch (e) {
       res.status(500).json(e);
     }

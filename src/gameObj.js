@@ -5,11 +5,9 @@ export default class GameObj {
       hitCells: [],
     };
     this.isYourTurn = firstTurn;
-    this.isGameEnd = false;
   }
   static countUsers = 0;
   id;
-
   get field() {
     const state = {};
     state.fieldState = this.fieldState;
@@ -58,6 +56,15 @@ export default class GameObj {
     }
   }
 
+  isAllShipsDestroyed() {
+    const hitShips = this.fieldState.ships.map((ship) => ship.filter((cell) => cell.hit === true));
+    //пока тестируем на меньшем количестве кораблей пусть будет так, в настоящей игре можно будет просто сравнивать с 20
+    const hitCellsCount = hitShips.reduce((acc, ship) => acc + ship.length, 0);
+    const cellsCount = this.fieldState.ships.reduce((acc, ship) => acc + ship.length, 0);
+    return hitCellsCount === cellsCount;
+
+  }
+
   get userId() {
     return this.id;
   }
@@ -67,5 +74,18 @@ export default class GameObj {
 
   static usersCount() {
     return GameObj.countUsers;
+  }
+
+  static nullifyUsers() {
+    GameObj.countUsers = 0;
+  }
+
+  restart(turn) {
+    this.fieldState = {
+      ships: [],
+      hitCells: [],
+    };
+    this.isYourTurn = turn;
+    this.id = null;
   }
 }
