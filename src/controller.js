@@ -1,6 +1,8 @@
 // eslint-disable-next-line import/no-named-as-default,import/no-named-as-default-member
 import GameObj from './gameObj.js';
 
+const SHIPSCOUNT = 2;
+
 const user1 = new GameObj(true);
 const user2 = new GameObj(false);
 
@@ -77,7 +79,7 @@ class Controller {
         res.status(400).json({ msg: 'User is not found' });
         return;
       }
-      if (req.body.length < 2) {
+      if (req.body.length < SHIPSCOUNT) {
         res.status(400).json({ msg: 'Not enough ships' });
         return;
       }
