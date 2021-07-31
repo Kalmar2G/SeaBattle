@@ -143,6 +143,11 @@ class Controller {
       res.status(500).json(e);
     }
   }
+
+  restart(req, res) {
+    restartGame();
+    res.status(200).json({ msg: 'game restarted' });
+  }
 }
 
 export default new Controller();

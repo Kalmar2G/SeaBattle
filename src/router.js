@@ -293,4 +293,15 @@ router.get('/makeHit', controller.makeHit);
  */
 router.get('/checkUsers', controller.checkUsers);
 
+/**
+ * @swagger
+ * /restart:
+ *  get:
+ *      summary: TESTING ONLY, endpoint not used in the game. Nullifies user objects
+ *      responses:
+ *          200:
+ *              description: success message
+ */
+router.get('/restart', controller.restart);
+
 export default router;
