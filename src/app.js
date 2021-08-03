@@ -16,6 +16,11 @@ app.use('/', router);
 const options = {
   definition: {
     openapi: '3.0.0',
+    info: {
+      title: 'SeaBattle API',
+      version: '1.1.0',
+      description: 'GROUP I594. PRACTICE PROJECT API',
+    },
   },
   apis: ['src/*.js'],
 };

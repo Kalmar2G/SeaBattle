@@ -47,14 +47,14 @@ class Controller {
   connect(req, res) {
     try {
       if (GameObj.usersCount() >= 2) {
-        res.status(200).json({ status: 2 });
+        res.status(200).json({ msg: 'all users are already connected', code: 2 });
         return;
       }
       const currentUser = getCurrentUser();
       currentUser.userId = Math.random().toString().slice(2, 10);
       GameObj.addUser();
       changeTurns();
-      res.status(200).json({ id: currentUser.userId, status: 1 });
+      res.status(200).json({ msg: 'user connected and got id', id: currentUser.userId, code: 1 });
     } catch (e) {
       res.status(500).json(e);
     }
@@ -63,10 +63,10 @@ class Controller {
   isAllConnected(req, res) {
     try {
       if (GameObj.usersCount() === 2) {
-        res.status(200).json({ started: true });
+        res.status(200).json({ msg: 'two players connected', isAllConnected: true, code: 1 });
         return;
       }
-      res.status(200).json({ started: false });
+      res.status(200).json({ msg: 'less than two players connected', isAllConnected: false, code: 2 });
     } catch (e) {
       res.status(500).json(e);
     }
@@ -76,15 +76,15 @@ class Controller {
     try {
       const currentUser = getUserById(req.query.id);
       if (currentUser === 0) {
-        res.status(400).json({ msg: 'User is not found' });
+        res.status(400).json({ msg: 'User is not found', code: 2 });
         return;
       }
       if (req.body.length < SHIPSCOUNT) {
-        res.status(400).json({ msg: 'Not enough ships' });
+        res.status(400).json({ msg: 'Not enough ships', code: 3 });
         return;
       }
       currentUser.field = req.body;
-      res.status(200).json({ msg: 'field set' });
+      res.status(200).json({ msg: 'field set', code: 1 });
     } catch (e) {
       res.status(500).json(e);
     }
@@ -95,10 +95,10 @@ class Controller {
       const { ships: ships1 } = user1.field.fieldState;
       const { ships: ships2 } = user2.field.fieldState;
       if ((ships1.length !== 0) && (ships2.length !== 0)) {
-        res.status(200).json({ ready: true });
+        res.status(200).json({ msg: 'All fields are set', isFieldsReady: true, code: 1 });
         return;
       }
-      res.status(200).json({ ready: false });
+      res.status(200).json({ msg: 'Fields aren\'t set', isFieldsReady: false, code: 2 });
     } catch (e) {
       res.status(500).json(e);
     }
@@ -106,9 +106,15 @@ class Controller {
 
   getGameState(req, res) {
     try {
-      const currentUser = getUserById(req.query.id);
+      const { id } = req.query;
+      const currentUser = getUserById(id);
+      if (currentUser === 0) {
+        res.status(400).json({ msg: 'User is not found', code: 2 });
+        return;
+      }
       const actualField = currentUser.field;
-      res.status(200).json(actualField);
+      const { isGameOverFlag } = GameObj;
+      res.status(200).json({ actualField, isGameOverFlag, code: 1 });
     } catch (e) {
       res.status(500).json(e);
     }
@@ -120,16 +126,20 @@ class Controller {
       const inactiveUser = getInactiveUser();
       const { id, x, y } = req.query;
       if (currentUser.userId !== id) {
-        res.status(400).json({ msg: 'Now is not your turn' });
+        res.status(400).json({ msg: 'Now is not your turn', code: 2 });
         return;
       }
-      inactiveUser.addHit({ x, y });
-      const enemyField = inactiveUser.makeHitFilter();
-      changeTurns();
-      res.status(200).json(enemyField);
+      const isChangeTurns = inactiveUser.addHit({ x, y });
+      if (isChangeTurns) {
+        changeTurns();
+      }
       if (isGameOver()) {
+        GameObj.gameOver();
         setTimeout(restartGame, 10000);
       }
+      const { isGameOverFlag } = GameObj;
+      const enemyField = inactiveUser.makeHitFilter();
+      res.status(200).json({ enemyField, isGameOverFlag, code: 1 });
     } catch (e) {
       res.status(500).json(e);
     }

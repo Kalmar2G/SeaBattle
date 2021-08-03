@@ -5,31 +5,43 @@ const router = new Router();
 
 /**
  * @swagger
+ * tags:
+ *  - name: Game routes
+ *  - name: Test routes
+ */
+
+/**
+ * @swagger
  * /connect:
  *  get:
  *      summary: Connection to the game (assignment ID to user)
+ *      tags: [Game routes]
  *      responses:
  *          "200":
- *              description: user ID and successful status or negative status
+ *              description: User ID and successful code or error code
  *              content:
  *                  application/json:
  *                      schema:
  *                          type: object
  *                          properties:
+ *                              msg:
+ *                                  type: string
  *                              id:
  *                                  type: number
- *                              status:
+ *                              code:
  *                                  type: number
  *                      examples:
  *                          success:
  *                              summary: New user connected and got ID
  *                              value:
+ *                                  msg: user connected and got id
  *                                  id: 54053762
- *                                  status: 1
+ *                                  code: 1
  *                          error:
  *                              summary: A lot of users (2+)
  *                              value:
- *                                  status: 2
+ *                                  msg: all users are already connected
+ *                                  code: 2
  */
 router.get('/connect', controller.connect);
 
@@ -37,26 +49,35 @@ router.get('/connect', controller.connect);
  * @swagger
  * /isAllConnected:
  *  get:
- *      summary: Check 2 users are connected
+ *      summary: Checks for two connected users
+ *      tags: [Game routes]
  *      responses:
  *          "200":
- *              description: Can to start game ( true / false)
+ *              description: The game can be started(true/false)
  *              content:
  *                  application/json:
  *                      schema:
  *                          type: object
  *                          properties:
- *                              started:
+ *                              msg:
+ *                                  type: string
+ *                              isAllConnected:
  *                                  type: boolean
+ *                              code:
+ *                                  type: number
  *                      examples:
  *                          success:
- *                              summary: Game can be started (2 users connected)
+ *                              summary: The game can be started (2 users connected)
  *                              value:
- *                                  started: true
+ *                                  msg: two players connected
+ *                                  isAllConnected: true
+ *                                  code: 1
  *                          error:
- *                              summary: Not enough users
+ *                              summary: The game can't be started (2 users aren't connected)
  *                              value:
- *                                  started: false
+ *                                  msg: less than two players connected
+ *                                  isAllConnected: false
+ *                                  code: 2
  */
 router.get('/isAllConnected', controller.isAllConnected);
 
@@ -65,6 +86,7 @@ router.get('/isAllConnected', controller.isAllConnected);
  * /setField:
  *   post:
  *     summary: Setting user field
+ *     tags: [Game routes]
  *     parameters:
  *             - in: query
  *               name: id
@@ -89,9 +111,6 @@ router.get('/isAllConnected', controller.isAllConnected);
  *                                  y:
  *                                      type: number
  *                                      example: 2
- *                                  hit:
- *                                      type: boolean
- *                                      example: false
  *     responses:
  *       200:
  *         description: Success message
@@ -103,6 +122,9 @@ router.get('/isAllConnected', controller.isAllConnected);
  *                      msg:
  *                          type: string
  *                          example: field set
+ *                      code:
+ *                          type: number
+ *                          example: 1
  *       400:
  *         description: Error message
  *         content:
@@ -112,15 +134,19 @@ router.get('/isAllConnected', controller.isAllConnected);
  *                  properties:
  *                      msg:
  *                          type: string
+ *                      code:
+ *                          type: number
  *              examples:
  *                  1:
  *                      summary: User is not found
  *                      value:
  *                          msg: User is not found
+ *                          code: 2
  *                  2:
  *                      summary: Not enough ships
  *                      value:
  *                          msg: Not enough ships
+ *                          code: 3
  */
 router.post('/setField', controller.setField);
 
@@ -129,6 +155,7 @@ router.post('/setField', controller.setField);
  * /isFieldsReady:
  *  get:
  *      summary: Both users set their fields
+ *      tags: [Game routes]
  *      responses:
  *          "200":
  *              description: Success or error message
@@ -137,17 +164,25 @@ router.post('/setField', controller.setField);
  *                      schema:
  *                          type: object
  *                          properties:
- *                              ready:
+ *                              msg:
+ *                                  type: string
+ *                              isFieldsReady:
  *                                  type: boolean
+ *                              code:
+ *                                  type: number
  *                      examples:
  *                          success:
- *                              summary: Set 2 fields
+ *                              summary: All fields are set
  *                              value:
- *                                  ready: true
+ *                                  msg: All fields are set
+ *                                  isFieldsReady: true
+ *                                  code: 1
  *                          error:
- *                              summary: Set <2 fields
+ *                              summary: Fields aren't set
  *                              value:
- *                                  ready: false
+ *                                  msg: Fields aren't set
+ *                                  isFieldsReady: false
+ *                                  code: 2
  */
 router.get('/isFieldsReady', controller.isFieldsReady);
 
@@ -156,6 +191,7 @@ router.get('/isFieldsReady', controller.isFieldsReady);
  * /getGameState:
  *  get:
  *      summary: State of your field
+ *      tags: [Game routes]
  *      parameters:
  *             - in: query
  *               name: id
@@ -171,39 +207,61 @@ router.get('/isFieldsReady', controller.isFieldsReady);
  *                      schema:
  *                          type: object
  *                          properties:
- *                              fieldState:
+ *                              actualField:
  *                                  type: object
  *                                  properties:
- *                                      ships:
- *                                          type: array
- *                                          items:
- *                                              type: array
- *                                              items:
- *                                                  type: object
- *                                                  properties:
- *                                                      x:
- *                                                          type: number
- *                                                          example: 5
- *                                                      y:
- *                                                          type: number
- *                                                          example: 7
- *                                                      hit:
- *                                                          type: boolean
- *                                                          example: false
- *                                      hitCells:
- *                                          type: array
- *                                          items:
- *                                              type: object
- *                                              properties:
- *                                                  x:
- *                                                      type: number
- *                                                      example: 6
- *                                                  y:
- *                                                      type: number
- *                                                      example: 2
- *                              isYourTurn:
+ *                                      fieldState:
+ *                                          type: object
+ *                                          properties:
+ *                                              ships:
+ *                                                  type: array
+ *                                                  items:
+ *                                                      type: array
+ *                                                      items:
+ *                                                          type: object
+ *                                                          properties:
+ *                                                              x:
+ *                                                                  type: number
+ *                                                                  example: 5
+ *                                                              y:
+ *                                                                  type: number
+ *                                                                  example: 7
+ *                                                              hit:
+ *                                                                  type: boolean
+ *                                                                  example: false
+ *                                              hitCells:
+ *                                                  type: array
+ *                                                  items:
+ *                                                      type: object
+ *                                                      properties:
+ *                                                          x:
+ *                                                              type: number
+ *                                                              example: 6
+ *                                                          y:
+ *                                                              type: number
+ *                                                              example: 2
+ *                                      isYourTurn:
+ *                                          type: boolean
+ *                                          example: true
+ *                              isGameOverFlag:
  *                                  type: boolean
- *                                  example: true
+ *                                  example: false
+ *                              code:
+ *                                  type: number
+ *                                  example: 1
+ *          "400":
+ *              description: User is not found
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          properties:
+ *                              msg:
+ *                                  type: string
+ *                                  example: User is not found
+ *                              code:
+ *                                  type: number
+ *                                  example: 2
  */
 router.get('/getGameState', controller.getGameState);
 
@@ -212,6 +270,7 @@ router.get('/getGameState', controller.getGameState);
  * /makeHit:
  *  get:
  *      summary: Hit on the enemy field
+ *      tags: [Game routes]
  *      parameters:
  *             - in: query
  *               name: id
@@ -239,36 +298,45 @@ router.get('/getGameState', controller.getGameState);
  *                      schema:
  *                          type: object
  *                          properties:
- *                              fieldState:
+ *                              enemyField:
  *                                  type: object
  *                                  properties:
- *                                      ships:
- *                                          type: array
- *                                          items:
- *                                              type: array
- *                                              items:
- *                                                  type: object
- *                                                  properties:
- *                                                      x:
- *                                                          type: number
- *                                                          example: 5
- *                                                      y:
- *                                                          type: number
- *                                                          example: 7
- *                                                      hit:
- *                                                          type: boolean
- *                                                          example: true
- *                                      hitCells:
- *                                          type: array
- *                                          items:
- *                                              type: object
- *                                              properties:
- *                                                  x:
- *                                                      type: number
- *                                                      example: 6
- *                                                  y:
- *                                                      type: number
- *                                                      example: 2
+ *                                      fieldState:
+ *                                          type: object
+ *                                          properties:
+ *                                              ships:
+ *                                                  type: array
+ *                                                  items:
+ *                                                      type: array
+ *                                                      items:
+ *                                                          type: object
+ *                                                          properties:
+ *                                                              x:
+ *                                                                  type: number
+ *                                                                  example: 5
+ *                                                              y:
+ *                                                                  type: number
+ *                                                                  example: 7
+ *                                                              hit:
+ *                                                                  type: boolean
+ *                                                                  example: true
+ *                                              hitCells:
+ *                                                  type: array
+ *                                                  items:
+ *                                                      type: object
+ *                                                      properties:
+ *                                                          x:
+ *                                                              type: number
+ *                                                              example: 6
+ *                                                          y:
+ *                                                              type: number
+ *                                                              example: 2
+ *                              isGameOverFlag:
+ *                                  type: boolean
+ *                                  example: false
+ *                              code:
+ *                                  type: number
+ *                                  example: 1
  *          "400":
  *              description: Now is not your turn
  *              content:
@@ -279,6 +347,9 @@ router.get('/getGameState', controller.getGameState);
  *                              msg:
  *                                  type: string
  *                                  example: Now is not your turn
+ *                              code:
+ *                                  type: number
+ *                                  example: 2
  */
 router.get('/makeHit', controller.makeHit);
 
@@ -287,6 +358,7 @@ router.get('/makeHit', controller.makeHit);
  * /checkUsers:
  *  get:
  *      summary: TESTING ONLY, not used in the game. Shows the state of both users
+ *      tags: [Test routes]
  *      responses:
  *          200:
  *              description: Array of users
@@ -297,7 +369,8 @@ router.get('/checkUsers', controller.checkUsers);
  * @swagger
  * /restart:
  *  get:
- *      summary: TESTING ONLY, endpoint not used in the game. Nullifies user objects
+ *      summary: TESTING ONLY, not used in the game. Nullifies user objects
+ *      tags: [Test routes]
  *      responses:
  *          200:
  *              description: success message

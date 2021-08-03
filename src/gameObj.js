@@ -7,6 +7,7 @@ export default class GameObj {
     this.isYourTurn = firstTurn;
   }
   static countUsers = 0;
+  static isGameOverFlag = false;
   id;
   get field() {
     const state = {};
@@ -21,6 +22,11 @@ export default class GameObj {
 
   set field(field) {
     this.fieldState.ships = [...field];
+    this.fieldState.ships.forEach((ship) => {
+      ship.forEach((cell) => {
+       cell['hit'] = false;
+      });
+    });
   }
 
   changeTurn() {
@@ -39,15 +45,54 @@ export default class GameObj {
       if ((cell.x === hit.x) && (cell.y ===  hit.y)) {
         cell.hit = true;
         hasChanged = true;
+        this.addHitCellsAfterDestroyShip(ship);
       }
     }));
     if (!hasChanged) {
       this.fieldState.hitCells.push(hit);
+      return true;
+    }
+    return false;
+  }
+  addHitCellsAfterDestroyShip(ship) {
+    const shipCells = ship.length;
+    const shipHitCells = ship.reduce((acc, cell) => {
+      if (cell.hit === true) {
+        return acc + 1;
+      }
+      return acc;
+    }, 0);
+    if (shipCells === shipHitCells) {
+      ship.forEach((cell) => {
+        for (let i = cell.x - 1; i <= cell.x + 1; i += 1) {
+          for (let j = cell.y - 1; j <= cell.y + 1; j += 1) {
+            if ((i >= 0) && (j >= 0) && (i <= 9) && (j <= 9) && !((i === cell.x) && (j === cell.y))) {
+              let cellFlag = false;
+              let shipFlag = false;
+              this.fieldState.hitCells.forEach((cell) => {
+                if ((cell.x === i) && (cell.y === j)) {
+                  cellFlag = true;
+                }
+              });
+              ship.forEach((cell) => {
+                if ((cell.x === i) && (cell.y === j)) {
+                  shipFlag = true;
+                }
+              });
+              if (!cellFlag && !shipFlag) {
+              this.fieldState.hitCells.push({ x: i, y: j });
+              }
+            }
+          }
+        }
+      });
     }
   }
 
   makeHitFilter() {
-    const filteredShips = this.fieldState.ships.map((ship) => ship.filter((cell) => cell.hit === true));
+    const filteredShips = this.fieldState.ships
+        .map((ship) => ship.filter((cell) => cell.hit === true))
+        .filter((ship) => ship.length > 0);
     return  {
       fieldState: {
         ships: filteredShips,
@@ -79,7 +124,9 @@ export default class GameObj {
   static nullifyUsers() {
     GameObj.countUsers = 0;
   }
-
+  static gameOver() {
+    GameObj.isGameOverFlag = true;
+  }
   restart(turn) {
     this.fieldState = {
       ships: [],
@@ -87,5 +134,6 @@ export default class GameObj {
     };
     this.isYourTurn = turn;
     this.id = null;
+    GameObj.isGameOverFlag = false;
   }
 }
