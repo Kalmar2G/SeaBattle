@@ -1,7 +1,6 @@
+import { validationResult } from 'express-validator';
 // eslint-disable-next-line import/no-named-as-default,import/no-named-as-default-member
 import GameObj from './gameObj.js';
-
-const SHIPSCOUNT = 2;
 
 const user1 = new GameObj(true);
 const user2 = new GameObj(false);
@@ -74,13 +73,16 @@ class Controller {
 
   setField(req, res) {
     try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        const arr = [];
+        errors.array().forEach((e) => arr.push(e.msg));
+        res.status(400).json({ msg: 'validation error', errors: arr, code: 3 });
+        return;
+      }
       const currentUser = getUserById(req.query.id);
       if (currentUser === 0) {
         res.status(400).json({ msg: 'User is not found', code: 2 });
-        return;
-      }
-      if (req.body.length < SHIPSCOUNT) {
-        res.status(400).json({ msg: 'Not enough ships', code: 3 });
         return;
       }
       currentUser.field = req.body;
@@ -106,6 +108,13 @@ class Controller {
 
   getGameState(req, res) {
     try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        const arr = [];
+        errors.array().forEach((e) => arr.push(e.msg));
+        res.status(400).json({ msg: 'validation error', errors: arr, code: 3 });
+        return;
+      }
       const { id } = req.query;
       const currentUser = getUserById(id);
       if (currentUser === 0) {
@@ -122,6 +131,13 @@ class Controller {
 
   makeHit(req, res) {
     try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        const arr = [];
+        errors.array().forEach((e) => arr.push(e.msg));
+        res.status(400).json({ msg: 'validation error', errors: arr, code: 3 });
+        return;
+      }
       const currentUser = getCurrentUser();
       const inactiveUser = getInactiveUser();
       const { id, x, y } = req.query;

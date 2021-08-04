@@ -1,4 +1,5 @@
 import Router from 'express';
+import { idValidator, fieldValidator, hitValidator } from './validator.js';
 import controller from './controller.js';
 
 const router = new Router();
@@ -134,6 +135,8 @@ router.get('/isAllConnected', controller.isAllConnected);
  *                  properties:
  *                      msg:
  *                          type: string
+ *                      errors:
+ *                          type: array
  *                      code:
  *                          type: number
  *              examples:
@@ -143,12 +146,13 @@ router.get('/isAllConnected', controller.isAllConnected);
  *                          msg: User is not found
  *                          code: 2
  *                  2:
- *                      summary: Not enough ships
+ *                      summary: Validation error
  *                      value:
- *                          msg: Not enough ships
+ *                          msg: validation error
+ *                          errors: ['Identifier consists of 8 digits', 'You must send array with 2 ships']
  *                          code: 3
  */
-router.post('/setField', controller.setField);
+router.post('/setField', idValidator, fieldValidator, controller.setField);
 
 /**
  * @swagger
@@ -258,12 +262,24 @@ router.get('/isFieldsReady', controller.isFieldsReady);
  *                          properties:
  *                              msg:
  *                                  type: string
- *                                  example: User is not found
+ *                              errors:
+ *                                  type: array
  *                              code:
  *                                  type: number
- *                                  example: 2
+ *                      examples:
+ *                          1:
+ *                              summary: User is not found
+ *                              value:
+ *                                  msg: User is not found
+ *                                  code: 2
+ *                          2:
+ *                              summary: Validation error
+ *                              value:
+ *                                  msg: validation error
+ *                                  errors: ['Identifier consists of 8 digits']
+ *                                  code: 3
  */
-router.get('/getGameState', controller.getGameState);
+router.get('/getGameState', idValidator, controller.getGameState);
 
 /**
  * @swagger
@@ -346,12 +362,24 @@ router.get('/getGameState', controller.getGameState);
  *                          properties:
  *                              msg:
  *                                  type: string
- *                                  example: Now is not your turn
+ *                              errors:
+ *                                  type: array
  *                              code:
  *                                  type: number
- *                                  example: 2
+ *                      examples:
+ *                          1:
+ *                              summary: Now is not your turn
+ *                              value:
+ *                                  msg: Now is not your turn
+ *                                  code: 2
+ *                          2:
+ *                              summary: Validation error
+ *                              value:
+ *                                  msg: validation error
+ *                                  errors: ['Identifier consists of 8 digits', 'X is a number between 0 and 9', 'Y is a number between 0 and 9']
+ *                                  code: 3
  */
-router.get('/makeHit', controller.makeHit);
+router.get('/makeHit', idValidator, hitValidator, controller.makeHit);
 
 /**
  * @swagger

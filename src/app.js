@@ -1,5 +1,6 @@
 import express from 'express';
 import morgan from 'morgan';
+import bodyParser from 'body-parser';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import router from './router.js';
@@ -7,7 +8,7 @@ import router from './router.js';
 const app = express();
 
 app.use(express.json());
-
+app.use(bodyParser.text());
 const logger = morgan('combined');
 app.use(logger);
 
@@ -18,7 +19,7 @@ const options = {
     openapi: '3.0.0',
     info: {
       title: 'SeaBattle API',
-      version: '1.1.0',
+      version: '1.2.0',
       description: 'GROUP I594. PRACTICE PROJECT API',
     },
   },
