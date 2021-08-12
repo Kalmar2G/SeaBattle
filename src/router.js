@@ -25,8 +25,6 @@ const router = new Router();
  *                      schema:
  *                          type: object
  *                          properties:
- *                              msg:
- *                                  type: string
  *                              id:
  *                                  type: number
  *                              code:
@@ -35,13 +33,11 @@ const router = new Router();
  *                          success:
  *                              summary: New user connected and got ID
  *                              value:
- *                                  msg: user connected and got id
  *                                  id: 54053762
  *                                  code: 1
  *                          error:
  *                              summary: A lot of users (2+)
  *                              value:
- *                                  msg: all users are already connected
  *                                  code: 2
  */
 router.get('/connect', controller.connect);
@@ -60,8 +56,6 @@ router.get('/connect', controller.connect);
  *                      schema:
  *                          type: object
  *                          properties:
- *                              msg:
- *                                  type: string
  *                              isAllConnected:
  *                                  type: boolean
  *                              code:
@@ -70,13 +64,11 @@ router.get('/connect', controller.connect);
  *                          success:
  *                              summary: The game can be started (2 users connected)
  *                              value:
- *                                  msg: two players connected
  *                                  isAllConnected: true
  *                                  code: 1
  *                          error:
  *                              summary: The game can't be started (2 users aren't connected)
  *                              value:
- *                                  msg: less than two players connected
  *                                  isAllConnected: false
  *                                  code: 2
  */
@@ -120,9 +112,6 @@ router.get('/isAllConnected', controller.isAllConnected);
  *              schema:
  *                  type: object
  *                  properties:
- *                      msg:
- *                          type: string
- *                          example: field set
  *                      code:
  *                          type: number
  *                          example: 1
@@ -168,8 +157,6 @@ router.post('/setField', idValidator, fieldValidator, controller.setField);
  *                      schema:
  *                          type: object
  *                          properties:
- *                              msg:
- *                                  type: string
  *                              isFieldsReady:
  *                                  type: boolean
  *                              code:
@@ -178,13 +165,11 @@ router.post('/setField', idValidator, fieldValidator, controller.setField);
  *                          success:
  *                              summary: All fields are set
  *                              value:
- *                                  msg: All fields are set
  *                                  isFieldsReady: true
  *                                  code: 1
  *                          error:
  *                              summary: Fields aren't set
  *                              value:
- *                                  msg: Fields aren't set
  *                                  isFieldsReady: false
  *                                  code: 2
  */

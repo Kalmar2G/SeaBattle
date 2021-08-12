@@ -46,14 +46,14 @@ class Controller {
   connect(req, res) {
     try {
       if (GameObj.usersCount() >= 2) {
-        res.status(200).json({ msg: 'all users are already connected', code: 2 });
+        res.status(200).json({ code: 2 });
         return;
       }
       const currentUser = getCurrentUser();
       currentUser.userId = Math.random().toString().slice(2, 10);
       GameObj.addUser();
       changeTurns();
-      res.status(200).json({ msg: 'user connected and got id', id: currentUser.userId, code: 1 });
+      res.status(200).json({ id: currentUser.userId, code: 1 });
     } catch (e) {
       res.status(500).json(e);
     }
@@ -62,10 +62,10 @@ class Controller {
   isAllConnected(req, res) {
     try {
       if (GameObj.usersCount() === 2) {
-        res.status(200).json({ msg: 'two players connected', isAllConnected: true, code: 1 });
+        res.status(200).json({ isAllConnected: true, code: 1 });
         return;
       }
-      res.status(200).json({ msg: 'less than two players connected', isAllConnected: false, code: 2 });
+      res.status(200).json({ isAllConnected: false, code: 2 });
     } catch (e) {
       res.status(500).json(e);
     }
@@ -86,7 +86,7 @@ class Controller {
         return;
       }
       currentUser.field = req.body;
-      res.status(200).json({ msg: 'field set', code: 1 });
+      res.status(200).json({ code: 1 });
     } catch (e) {
       res.status(500).json(e);
     }
@@ -97,10 +97,10 @@ class Controller {
       const { ships: ships1 } = user1.field.fieldState;
       const { ships: ships2 } = user2.field.fieldState;
       if ((ships1.length !== 0) && (ships2.length !== 0)) {
-        res.status(200).json({ msg: 'All fields are set', isFieldsReady: true, code: 1 });
+        res.status(200).json({ isFieldsReady: true, code: 1 });
         return;
       }
-      res.status(200).json({ msg: 'Fields aren\'t set', isFieldsReady: false, code: 2 });
+      res.status(200).json({ isFieldsReady: false, code: 2 });
     } catch (e) {
       res.status(500).json(e);
     }

@@ -3,6 +3,7 @@ import morgan from 'morgan';
 import bodyParser from 'body-parser';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
+import cors from 'cors';
 import router from './router.js';
 
 const app = express();
@@ -11,6 +12,7 @@ app.use(express.json());
 app.use(bodyParser.text());
 const logger = morgan('combined');
 app.use(logger);
+app.use(cors());
 
 app.use('/', router);
 
